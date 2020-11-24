@@ -1,6 +1,6 @@
 import express from 'express'
 import bcrypt from 'bcrypt'
-import jwt from 'jsonwebtoken'
+import passport from 'passport'
 
 import { UserModel } from '../../models/User'
 import { IFieldErrors as IFieldErrorSet, IFormError, IUserDocument, IUserRegisterData } from '../../types'
@@ -59,7 +59,7 @@ router.post('/register', async (req, res) => {
 
     const hash = await bcrypt.hash(password, 12)
 
-    const newUser = await new UserModel({
+    await new UserModel({
       name: name!,
       email: email!,
       hash
@@ -90,7 +90,7 @@ router.post('/login', async (req, res) => {
   } else if (password.match(/(^\s+.*)|(.*\s+$)/)) {
     fieldErrors.password = 'password cannot start or end with a space'
   }
-  
+
   if (Object.getOwnPropertyNames(fieldErrors).length) {
     const formErrror: IFormError = {
       message: 'there are errors',
@@ -98,7 +98,7 @@ router.post('/login', async (req, res) => {
     }
     return res.status(400).json(formErrror)
   }
-  
+
   try {
     const user = await UserModel.findOne({ email: email! })
 
@@ -122,17 +122,19 @@ router.post('/login', async (req, res) => {
       return res.status(400).json(formErrror)
     }
 
-    const token = await signAsync({id: user._id}, process.env.JWT_SECRET!)
-      
-    return res.json({
-      token,
-      user: user.getInfo()
-    })
+    const token = await signAsync({ id: user._id }, process.env.JWT_SECRET!, { expiresIn: '1h' })
+
+    return res.json({ token })
 
   } catch (err) {
     console.log('[server][error] user register\n', err);
     return res.sendStatus(500)
   }
+})
+
+router.get('/me', passport.authenticate('jwt', { session: false }), (req, res) => {
+  const user = req.user! as IUserDocument
+  return res.json({ user: user.getInfo() })
 })
 
 export default router

@@ -1,11 +1,15 @@
 import express from 'express'
 import dotenv from 'dotenv'
 import mongoose from 'mongoose'
+import passport from 'passport'
 
 import apiRoute from './routes/api'
+import passportConfig from './config/passport'
+import { signAsync } from './utils/jwt'
 
 const main = async () => {
   dotenv.config()
+  passportConfig()
 
   try {
     mongoose.connect(process.env.MONGO_URI!, {
@@ -21,6 +25,7 @@ const main = async () => {
   const app = express()
 
   app.use(express.json())
+  app.use(passport.initialize())
 
   app.use('/api', apiRoute)
 
