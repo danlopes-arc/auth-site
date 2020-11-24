@@ -1,9 +1,16 @@
 import { Document } from 'mongoose'
 
+export interface IUserInfo {
+  id: any
+  name: string,
+  email: string
+}
+
 export interface IUser extends Document {
   name: string,
   email: string,
-  hash: string
+  hash: string,
+  info: () => IUserInfo
 }
 
 export interface IUserRegisterData {

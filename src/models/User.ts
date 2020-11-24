@@ -1,9 +1,9 @@
 import mongoose from 'mongoose'
-import { IUser } from '../types'
+import { IUser as IUserDocument } from '../types'
 
 const Schema = mongoose.Schema
 
-const UserSchema = new Schema({
+const UserSchema = new Schema<IUserDocument>({
   name: {
     type: String,
     required: true
@@ -19,9 +19,8 @@ const UserSchema = new Schema({
   },
 })
 
-UserSchema.virtual('info')
-  .get(function (this: any) {
-    return (({ name, email, _id }: any) => ({ name, email, id: _id }))(this)
-  })
+UserSchema.methods.info = function() {
+  return (({ name, email, _id }) => ({ name, email, id: _id }))(this)
+}
 
-export const User = mongoose.model<IUser>('User', UserSchema)
+export const User = mongoose.model<IUserDocument>('User', UserSchema)
