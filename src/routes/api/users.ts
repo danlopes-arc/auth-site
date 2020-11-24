@@ -1,6 +1,6 @@
 import express from 'express'
 import { User } from '../../models/User'
-import { IFieldErrors as IFieldErrorSet, IFormError, IUser, IUserRegisterData } from '../../types'
+import { IFieldErrors as IFieldErrorSet, IFormError, IUserDocument, IUserRegisterData } from '../../types'
 import { normalize, trimNormalize } from '../../utils/validatejs'
 import bcrypt from 'bcrypt'
 
@@ -63,6 +63,63 @@ router.post('/register', async (req, res) => {
     }).save()
 
     return res.sendStatus(201)
+
+  } catch (err) {
+    console.log('[server][error] user register\n', err);
+    return res.sendStatus(500)
+  }
+})
+
+router.post('/login', async (req, res) => {
+  const email = trimNormalize(req.body.email)
+  const password = normalize(req.body.password)
+
+  const fieldErrors: IFieldErrorSet = {}
+
+  if (!email) {
+    fieldErrors.email = 'email is required'
+  } else if (!email.match(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/)) {
+    fieldErrors.email = 'email is invalid'
+  }
+
+  if (!password) {
+    fieldErrors.password = 'password is required'
+  } else if (password.match(/(^\s+.*)|(.*\s+$)/)) {
+    fieldErrors.password = 'password cannot start or end with a space'
+  }
+  
+  if (Object.getOwnPropertyNames(fieldErrors).length) {
+    const formErrror: IFormError = {
+      message: 'there are errors',
+      fields: fieldErrors
+    }
+    return res.status(400).json(formErrror)
+  }
+  
+  try {
+    const user = await User.findOne({ email: email! })
+
+    if (!user) {
+      fieldErrors.email = 'email does not exist'
+      const formErrror: IFormError = {
+        message: 'there are errors',
+        fields: fieldErrors
+      }
+      return res.status(404).json(formErrror)
+    }
+
+    const match = await bcrypt.compare(password, user.hash)
+
+    if (!match) {
+      fieldErrors.password = 'password is incorrect'
+      const formErrror: IFormError = {
+        message: 'there are errors',
+        fields: fieldErrors
+      }
+      return res.status(400).json(formErrror)
+    }
+
+    return res.json(user.getInfo())
 
   } catch (err) {
     console.log('[server][error] user register\n', err);
