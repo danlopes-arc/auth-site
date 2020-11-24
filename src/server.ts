@@ -20,6 +20,8 @@ const main = async () => {
 
   const app = express()
 
+  app.use(express.json())
+
   app.use('/api', apiRoute)
 
   const port = process.env.PORT

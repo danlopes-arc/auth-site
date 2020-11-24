@@ -1,10 +1,5 @@
-import mongoose, { Document } from 'mongoose'
-
-export interface IUser extends Document {
-  name: string,
-  email: string,
-  hash: string
-}
+import mongoose from 'mongoose'
+import { IUser } from '../types'
 
 const Schema = mongoose.Schema
 
