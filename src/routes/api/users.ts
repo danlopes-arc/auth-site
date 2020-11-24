@@ -1,8 +1,11 @@
 import express from 'express'
+import bcrypt from 'bcrypt'
+import jwt from 'jsonwebtoken'
+
 import { User } from '../../models/User'
 import { IFieldErrors as IFieldErrorSet, IFormError, IUserDocument, IUserRegisterData } from '../../types'
 import { normalize, trimNormalize } from '../../utils/validatejs'
-import bcrypt from 'bcrypt'
+import { signAsync } from '../../utils/jwt'
 
 
 const router = express()
@@ -119,7 +122,12 @@ router.post('/login', async (req, res) => {
       return res.status(400).json(formErrror)
     }
 
-    return res.json(user.getInfo())
+    const token = await signAsync({id: user._id}, process.env.JWT_SECRET!)
+      
+    return res.json({
+      token,
+      user: user.getInfo()
+    })
 
   } catch (err) {
     console.log('[server][error] user register\n', err);
