@@ -25,5 +25,5 @@ export interface IFormError {
 }
 
 export interface IFieldErrors {
-  [key: string]: string,
+  [key: string]: string[],
 }

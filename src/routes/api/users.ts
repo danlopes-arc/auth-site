@@ -1,11 +1,13 @@
 import express from 'express'
 import bcrypt from 'bcrypt'
 import passport from 'passport'
+import { validate } from 'validate.js'
 
 import { UserModel } from '../../models/User'
 import { IFieldErrors as IFieldErrorSet, IFormError, IUserDocument, IUserRegisterData } from '../../types'
-import { normalize, trimNormalize } from '../../utils/validatejs'
+import { normalize, trimIfOnlySpacesNormalize, trimNormalize } from '../../utils/validatejs'
 import { signAsync } from '../../utils/jwt'
+import { loginConstraints, registerConstraints } from '../../utils/constraints'
 
 
 const router = express()
@@ -13,35 +15,18 @@ const router = express()
 router.post('/register', async (req, res) => {
   const name = trimNormalize(req.body.name)
   const email = trimNormalize(req.body.email)
-  const password = normalize(req.body.password)
+  const password = trimIfOnlySpacesNormalize(req.body.password)
 
-  const fieldErrors: IFieldErrorSet = {}
-
-  if (!name) {
-    fieldErrors.name = 'name is required'
-  } else if (name.length < 3) {
-    fieldErrors.name = 'name must be at least 3 characters'
+  const formErrror: IFormError = {
+    message: 'there are errors',
+    fields: validate({
+      name,
+      email,
+      password
+    }, registerConstraints)
   }
 
-  if (!email) {
-    fieldErrors.email = 'email is required'
-  } else if (!email.match(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/)) {
-    fieldErrors.email = 'email is invalid'
-  }
-
-  if (!password) {
-    fieldErrors.password = 'password is required'
-  } else if (password.match(/(^\s+.*)|(.*\s+$)/)) {
-    fieldErrors.password = 'password cannot start or end with a space'
-  } else if (password.length < 3) {
-    fieldErrors.password = 'password must be at least 3 characters'
-  }
-
-  if (Object.getOwnPropertyNames(fieldErrors).length) {
-    const formErrror: IFormError = {
-      message: 'there are errors',
-      fields: fieldErrors
-    }
+  if (formErrror.fields) {
     return res.status(400).json(formErrror)
   }
 
@@ -49,11 +34,7 @@ router.post('/register', async (req, res) => {
     const user = await UserModel.findOne({ email: email! })
 
     if (user) {
-      fieldErrors.email = 'email already in use'
-      const formErrror: IFormError = {
-        message: 'there are errors',
-        fields: fieldErrors
-      }
+      formErrror.fields = { emial: ['email already in use'] }
       return res.status(400).json(formErrror)
     }
 
@@ -75,27 +56,17 @@ router.post('/register', async (req, res) => {
 
 router.post('/login', async (req, res) => {
   const email = trimNormalize(req.body.email)
-  const password = normalize(req.body.password)
+  const password = trimIfOnlySpacesNormalize(req.body.password)
 
-  const fieldErrors: IFieldErrorSet = {}
-
-  if (!email) {
-    fieldErrors.email = 'email is required'
-  } else if (!email.match(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/)) {
-    fieldErrors.email = 'email is invalid'
+  const formErrror: IFormError = {
+    message: 'there are errors',
+    fields: validate({
+      email,
+      password
+    }, loginConstraints)
   }
 
-  if (!password) {
-    fieldErrors.password = 'password is required'
-  } else if (password.match(/(^\s+.*)|(.*\s+$)/)) {
-    fieldErrors.password = 'password cannot start or end with a space'
-  }
-
-  if (Object.getOwnPropertyNames(fieldErrors).length) {
-    const formErrror: IFormError = {
-      message: 'there are errors',
-      fields: fieldErrors
-    }
+  if (formErrror.fields) {
     return res.status(400).json(formErrror)
   }
 
@@ -103,22 +74,14 @@ router.post('/login', async (req, res) => {
     const user = await UserModel.findOne({ email: email! })
 
     if (!user) {
-      fieldErrors.email = 'email does not exist'
-      const formErrror: IFormError = {
-        message: 'there are errors',
-        fields: fieldErrors
-      }
+      formErrror.fields = { email: ['Email does not exist'] }
       return res.status(404).json(formErrror)
     }
 
     const match = await bcrypt.compare(password, user.hash)
 
     if (!match) {
-      fieldErrors.password = 'password is incorrect'
-      const formErrror: IFormError = {
-        message: 'there are errors',
-        fields: fieldErrors
-      }
+      formErrror.fields = { email: ['Password is incorrect'] }
       return res.status(400).json(formErrror)
     }
 

@@ -8,3 +8,10 @@ export const trimNormalize = (value?: string) => {
   }
   return normalize(value)
 }
+
+export const trimIfOnlySpacesNormalize = (value?: string) => {
+  if (value) {
+    value = value.trim() === "" ? value.trim() : value
+  }
+  return normalize(value)
+}
