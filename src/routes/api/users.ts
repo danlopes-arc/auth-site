@@ -2,7 +2,7 @@ import express from 'express'
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
 
-import { User } from '../../models/User'
+import { UserModel } from '../../models/User'
 import { IFieldErrors as IFieldErrorSet, IFormError, IUserDocument, IUserRegisterData } from '../../types'
 import { normalize, trimNormalize } from '../../utils/validatejs'
 import { signAsync } from '../../utils/jwt'
@@ -46,7 +46,7 @@ router.post('/register', async (req, res) => {
   }
 
   try {
-    const user = await User.findOne({ email: email! })
+    const user = await UserModel.findOne({ email: email! })
 
     if (user) {
       fieldErrors.email = 'email already in use'
@@ -59,7 +59,7 @@ router.post('/register', async (req, res) => {
 
     const hash = await bcrypt.hash(password, 12)
 
-    const newUser = await new User({
+    const newUser = await new UserModel({
       name: name!,
       email: email!,
       hash
@@ -100,7 +100,7 @@ router.post('/login', async (req, res) => {
   }
   
   try {
-    const user = await User.findOne({ email: email! })
+    const user = await UserModel.findOne({ email: email! })
 
     if (!user) {
       fieldErrors.email = 'email does not exist'

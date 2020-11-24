@@ -23,4 +23,4 @@ UserSchema.methods.getInfo = function() {
   return (({ name, email, _id }) => ({ name, email, id: _id }))(this)
 }
 
-export const User = mongoose.model<IUserDocument>('User', UserSchema)
+export const UserModel = mongoose.model<IUserDocument>('User', UserSchema)
