@@ -1,13 +1,16 @@
 {
   "compilerOptions": {
+    "jsx": "preserve",
     /* Visit https://aka.ms/tsconfig.json to read more about this file */
 
-    "target": "es5",   
-    "module": "es6",
+    "target": "ESNext",
+    "module": "CommonJS",
     "outDir": "./dist",  
     "strict": true,
+    "moduleResolution": "node",
     "esModuleInterop": true,    
     "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true
+    "forceConsistentCasingInFileNames": true,
+    "sourceMap": true
   }
 }
