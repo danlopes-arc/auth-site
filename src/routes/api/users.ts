@@ -15,7 +15,7 @@ const router = express()
 router.post('/register', async (req, res) => {
   const name = trimNormalize(req.body.name)
   const email = trimNormalize(req.body.email)
-  const password = trimIfOnlySpacesNormalize(req.body.password)
+  const password = normalize(req.body.password)
 
   const formErrror: IFormError = {
     message: 'there are errors',
@@ -34,7 +34,7 @@ router.post('/register', async (req, res) => {
     const user = await UserModel.findOne({ email: email! })
 
     if (user) {
-      formErrror.fields = { emial: ['email already in use'] }
+      formErrror.fields = { email: ['email already in use'] }
       return res.status(400).json(formErrror)
     }
 
