@@ -34,7 +34,7 @@ router.post('/register', async (req, res) => {
     const user = await UserModel.findOne({ email: email! })
 
     if (user) {
-      formErrror.fields = { email: ['email already in use'] }
+      formErrror.fields = { email: ['Email already in use'] }
       return res.status(400).json(formErrror)
     }
 
@@ -81,7 +81,7 @@ router.post('/login', async (req, res) => {
     const match = await bcrypt.compare(password, user.hash)
 
     if (!match) {
-      formErrror.fields = { email: ['Password is incorrect'] }
+      formErrror.fields = { password: ['Password is incorrect'] }
       return res.status(400).json(formErrror)
     }
 
