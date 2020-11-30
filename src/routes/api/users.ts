@@ -14,7 +14,7 @@ const router = express()
 
 router.post('/register', async (req, res) => {
   const name = trimNormalize(req.body.name)
-  const email = trimNormalize(req.body.email)
+  const email = trimNormalize(req.body.email)?.toLowerCase() ?? null
   const password = normalize(req.body.password)
 
   const formErrror: IFormError = {
@@ -55,7 +55,7 @@ router.post('/register', async (req, res) => {
 })
 
 router.post('/login', async (req, res) => {
-  const email = trimNormalize(req.body.email)
+  const email = trimNormalize(req.body.email)?.toLowerCase() ?? null
   const password = trimIfOnlySpacesNormalize(req.body.password)
 
   const formErrror: IFormError = {
