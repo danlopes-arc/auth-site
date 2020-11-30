@@ -6,11 +6,11 @@ import { UserModel } from '../models/User'
 export default () => {
   const options: jwt.StrategyOptions = {
     jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-    secretOrKey: process.env.JWT_SECRET
+    secretOrKey: process.env.JWT_SECRET,
   }
 
-  passport.use(new jwt.Strategy(options,
-    async (decodedToken, done) => {
+  passport.use(
+    new jwt.Strategy(options, async (decodedToken, done) => {
       try {
         const user = await UserModel.findById(decodedToken.id)
 
@@ -22,6 +22,6 @@ export default () => {
         console.error('[server][error] passport jwt auth error\n', err)
         return done(err)
       }
-    }
-  ))
+    })
+  )
 }

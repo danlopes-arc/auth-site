@@ -11,7 +11,7 @@ export const trimNormalize = (value?: string) => {
 
 export const trimIfOnlySpacesNormalize = (value?: string) => {
   if (value) {
-    value = value.trim() === "" ? value.trim() : value
+    value = value.trim() === '' ? value.trim() : value
   }
   return normalize(value)
 }

@@ -4,11 +4,19 @@ import passport from 'passport'
 import { validate } from 'validate.js'
 
 import { UserModel } from '../../models/User'
-import { IFieldErrors as IFieldErrorSet, IFormError, IUserDocument, IUserRegisterData } from '../../types'
-import { normalize, trimIfOnlySpacesNormalize, trimNormalize } from '../../utils/validatejs'
+import {
+  IFieldErrors as IFieldErrorSet,
+  IFormError,
+  IUserDocument,
+  IUserRegisterData,
+} from '../../types'
+import {
+  normalize,
+  trimIfOnlySpacesNormalize,
+  trimNormalize,
+} from '../../utils/validatejs'
 import { signAsync } from '../../utils/jwt'
 import { loginConstraints, registerConstraints } from '../../utils/constraints'
-
 
 const router = express()
 
@@ -19,11 +27,14 @@ router.post('/register', async (req, res) => {
 
   const formErrror: IFormError = {
     message: 'there are errors',
-    fields: validate({
-      name,
-      email,
-      password
-    }, registerConstraints)
+    fields: validate(
+      {
+        name,
+        email,
+        password,
+      },
+      registerConstraints
+    ),
   }
 
   if (formErrror.fields) {
@@ -43,13 +54,12 @@ router.post('/register', async (req, res) => {
     await new UserModel({
       name: name!,
       email: email!,
-      hash
+      hash,
     }).save()
 
     return res.sendStatus(201)
-
   } catch (err) {
-    console.log('[server][error] user register\n', err);
+    console.log('[server][error] user register\n', err)
     return res.sendStatus(500)
   }
 })
@@ -60,10 +70,13 @@ router.post('/login', async (req, res) => {
 
   const formErrror: IFormError = {
     message: 'there are errors',
-    fields: validate({
-      email,
-      password
-    }, loginConstraints)
+    fields: validate(
+      {
+        email,
+        password,
+      },
+      loginConstraints
+    ),
   }
 
   if (formErrror.fields) {
@@ -85,19 +98,24 @@ router.post('/login', async (req, res) => {
       return res.status(400).json(formErrror)
     }
 
-    const token = await signAsync({ id: user._id }, process.env.JWT_SECRET!, { expiresIn: '1h' })
+    const token = await signAsync({ id: user._id }, process.env.JWT_SECRET!, {
+      expiresIn: '1h',
+    })
 
     return res.json({ token })
-
   } catch (err) {
-    console.log('[server][error] user register\n', err);
+    console.log('[server][error] user register\n', err)
     return res.sendStatus(500)
   }
 })
 
-router.get('/me', passport.authenticate('jwt', { session: false }), (req, res) => {
-  const user = req.user! as IUserDocument
-  return res.json({ user: user.getInfo() })
-})
+router.get(
+  '/me',
+  passport.authenticate('jwt', { session: false }),
+  (req, res) => {
+    const user = req.user! as IUserDocument
+    return res.json({ user: user.getInfo() })
+  }
+)
 
 export default router
