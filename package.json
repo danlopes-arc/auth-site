@@ -1,5 +1,5 @@
 {
-  "name": "auth-site",
+  "name": "authsite-server",
   "version": "1.0.0",
   "description": "Authentication website using Typescript, Express, Mongo, Passport and JSX as view engine",
   "main": "dist/server.js",
@@ -9,15 +9,15 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/danlopes-arc/auth-site.git"
+    "url": "git+https://github.com/danlopes-arc/authsite-server.git"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/danlopes-arc/auth-site/issues"
+    "url": "https://github.com/danlopes-arc/authsite-server/issues"
   },
-  "homepage": "https://github.com/danlopes-arc/auth-site#readme",
+  "homepage": "https://github.com/danlopes-arc/authsite-server#readme",
   "dependencies": {
     "bcrypt": "^5.0.0",
     "dotenv": "^8.2.0",
