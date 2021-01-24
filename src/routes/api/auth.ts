@@ -1,5 +1,8 @@
-import express from 'express'
+import express, { RequestHandler } from 'express'
 import passport from 'passport'
+import keys from '../../config/keys'
+import { IUserDocument } from '../../types'
+import { signAsync } from '../../utils/jwt'
 
 const router = express.Router()
 
@@ -9,14 +12,25 @@ router.get(
 )
 
 router.get(
-  '/github/callback',
+  '/github/login',
   passport.authenticate('github', {
     failureRedirect: '/login',
     session: false,
   }),
-  function (req, res) {
+  async (req, res) => {
     // Successful authentication, redirect home.
-    res.redirect('/me')
+    const user = req.user as IUserDocument
+
+    try {
+      const token = await signAsync({ id: user._id }, keys.jwtSecret, {
+        expiresIn: '1h',
+      })
+
+      return res.json({ token })
+    } catch (err) {
+      console.log('[server][error] user github jwt sign\n', err)
+      return res.sendStatus(500)
+    }
   }
 )
 
