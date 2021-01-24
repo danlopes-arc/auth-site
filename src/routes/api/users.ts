@@ -17,6 +17,7 @@ import {
 } from '../../utils/validatejs'
 import { signAsync } from '../../utils/jwt'
 import { loginConstraints, registerConstraints } from '../../utils/constraints'
+import keys from '../../config/keys'
 
 const router = express.Router()
 
@@ -98,7 +99,7 @@ router.post('/login', async (req, res) => {
       return res.status(400).json(formErrror)
     }
 
-    const token = await signAsync({ id: user._id }, process.env.JWT_SECRET!, {
+    const token = await signAsync({ id: user._id }, keys.jwtSecret, {
       expiresIn: '1h',
     })
 

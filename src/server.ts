@@ -5,14 +5,22 @@ import passport from 'passport'
 
 import apiRoute from './routes/api'
 import passportConfig from './config/passport'
-import { signAsync } from './utils/jwt'
+import keys, { missingKeys } from './config/keys'
 
 const main = async () => {
-  dotenv.config()
+
+  if (missingKeys.length > 0) {
+    return console.error(
+      `[server][error] the following keys are missing: ${missingKeys.join(
+        ', '
+      )}`
+    )
+  }
+
   passportConfig()
 
   try {
-    mongoose.connect(process.env.MONGO_URI!, {
+    mongoose.connect(keys.mongoURI, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
     })
@@ -29,7 +37,7 @@ const main = async () => {
 
   app.use('/api', apiRoute)
 
-  const port = process.env.PORT
+  const port = keys.port
 
   app.listen(port, () => {
     console.log(`[server] listening to http://localhost:${port}`)
