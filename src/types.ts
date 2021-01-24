@@ -10,6 +10,7 @@ export interface IUserDocument extends Document {
   name: string
   email: string
   hash: string
+  githubId: string
   getInfo: () => IUserInfo
 }
 

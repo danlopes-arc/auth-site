@@ -17,6 +17,7 @@ const UserSchema = new Schema<IUserDocument>({
     type: String,
     required: true,
   },
+  githubId: String
 })
 
 UserSchema.methods.getInfo = function () {
