@@ -18,7 +18,7 @@ import {
 import { signAsync } from '../../utils/jwt'
 import { loginConstraints, registerConstraints } from '../../utils/constraints'
 
-const router = express()
+const router = express.Router()
 
 router.post('/register', async (req, res) => {
   const name = trimNormalize(req.body.name)
