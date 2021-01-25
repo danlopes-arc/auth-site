@@ -5,12 +5,13 @@
 
     "target": "ESNext",
     "module": "CommonJS",
-    "outDir": "./dist",  
+    "outDir": "./dist",
     "strict": true,
     "moduleResolution": "node",
     "esModuleInterop": true,    
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "sourceMap": true
-  }
+  },
+  "include": ["./src"]
 }
