@@ -4,10 +4,14 @@
   "description": "Authentication website using Typescript, Express, Mongo, Passport and JSX as view engine",
   "main": "dist/server.js",
   "scripts": {
-    "start": "npm run client:build && npm install tsc && node dist/server.js",
+    "start": "node dist/server.js",
     "dev": "tsc && node dist/server.js",
     "watch": "nodemon --watch src/** --ext ts,tsx --exec \"npm dev\"",
-    "client:build": "cd client && npm install && npm run build"
+    "build": "tsc && cd client && npm install && npm run build"
+  },
+  "engines": {
+    "node": "14.x",
+    "npm": "6.x"
   },
   "repository": {
     "type": "git",
@@ -31,7 +35,6 @@
     "passport": "^0.4.1",
     "passport-github": "^1.1.0",
     "passport-jwt": "^4.0.0",
-    "typescript": "^4.1.2",
     "validate.js": "^0.13.1"
   },
   "devDependencies": {
@@ -45,6 +48,7 @@
     "@types/passport-jwt": "^3.0.3",
     "@types/validate.js": "^0.11.0",
     "nodemon": "^2.0.6",
-    "tslint": "^6.1.3"
+    "tslint": "^6.1.3",
+    "typescript": "^4.1.2"
   }
 }
